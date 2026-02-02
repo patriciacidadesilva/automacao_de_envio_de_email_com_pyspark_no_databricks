@@ -18,6 +18,7 @@ Todas as tabelas, colunas, domínios e regras de negócio utilizadas neste repos
 
 **Desafio:**  
 Documentos operacionais pendentes por longos períodos geram gargalos, retrabalho e impactos em processos downstream.
+
 Antes desta solução, o acompanhamento dessas pendências dependia de verificações manuais e comunicações reativas.
 
 ---
@@ -124,6 +125,76 @@ A solução:
 
 ---
 
+### 🕒 Como Executar (Databricks)
+
+#### 1) Importar o notebook
+1. No Databricks, vá em **Workspace** → **Import**
+2. Selecione o arquivo: `notebooks/alertas_operacionais_pyspark_databricks.py`
+3. Abra e execute célula a célula (ou rode tudo).
+
+---
+
+#### 2) Pré-requisitos de dados
+O notebook lê duas tabelas (fictícias):
+
+- `analytics.ops_core.fact_documents_backlog`
+- `analytics.ops_core.dim_users`
+
+Para rodar sem adaptação, essas tabelas precisam existir no seu workspace e conter, no mínimo, as colunas abaixo:
+
+**fact_documents_backlog**
+- `request_owner`, `issue_date`, `processing_flag`, `cost_center`, `task_name`, `responsible_area`
+- + colunas usadas no relatório (ex.: `document_id`, `document_number`, etc.)
+
+**dim_users**
+- `username`, `email`
+
+> Se você não tiver essas tabelas, ajuste os nomes em **Parâmetros e Configuração** no início do notebook para apontar para tabelas equivalentes no seu ambiente.
+
+---
+
+#### 3) Configurar credenciais de e-mail (SMTP)
+As credenciais são lidas por:
+- **Databricks Secrets** (preferencial), ou
+- **variáveis de ambiente**
+
+**Opção A — Databricks Secrets**
+Crie um secret scope (exemplo: `SVC_EMAIL`) e adicione as chaves:
+- `USER`
+- `PASSWORD`
+
+O notebook busca assim:
+- scope: `SVC_EMAIL`
+- keys: `USER` e `PASSWORD`
+
+**Opção B — Variáveis de ambiente**
+Defina no cluster/job:
+- `SMTP_USER`
+- `SMTP_PASSWORD`
+
+---
+
+#### 4) Configurar destinatários e servidor SMTP (opcional)
+Você pode sobrescrever por variáveis de ambiente:
+
+- `ALERT_EMAIL_TO` (default: `alerts@example.com`)
+- `ALERT_EMAIL_CC` (default: `ops@example.com`)
+- `SMTP_SERVER` (default: `smtp.office365.com`)
+- `SMTP_PORT` (default: `587`)
+
+---
+
+#### 5) Executar
+- Se houver registros pendentes, o notebook:
+  - gera o Excel em `/tmp`
+  - envia e-mail com o relatório anexado
+- Se não houver pendências, ele finaliza sem envio.
+
+> Este projeto foi desenhado para execução em ambiente Databricks. 
+> Fora desse contexto, ajustes adicionais são necessários.
+
+---
+
 ### 📊 Saídas (Output)
 
 - **Relatório Excel (.xlsx)** com os documentos pendentes
@@ -155,20 +226,15 @@ SMTP_PORT = 587
 
 ---
 
-### Secrets necessários no Databricks:
+### 🔑 Secrets necessários no Databricks
 
-- USER
-- PASSWORD
+- Scope: `SVC_EMAIL`
+- Keys: `USER`, `PASSWORD`
 
----
-
-### 🕒 Execução
-
-O notebook pode ser:
-- executado manualmente para testes
-- agendado como Databricks Job
-- integrado a um fluxo maior de monitoramento operacional
-
+Alternativamente, o código também aceita variáveis de ambiente:
+- `SMTP_USER`
+- `SMTP_PASSWORD`
+  
 ---
 
 ### 📈 Benefícios
