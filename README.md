@@ -186,7 +186,7 @@ O notebook pode ser:
 ```text
 .
 ├── notebooks/
-│   └── alertas_operacionais_pyspark_databricks.ipynb
+│   └── alertas_operacionais_pyspark_databricks.py
 ├── README.md
 └── .gitignore
 ```
