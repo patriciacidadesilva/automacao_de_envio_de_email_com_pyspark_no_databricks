@@ -1,5 +1,3 @@
-%md
-
 ## 📧 Alertas Operacionais Automatizados com PySpark no Databricks
 
 ### 🎯 Visão Geral
@@ -20,7 +18,6 @@ Todas as tabelas, colunas, domínios e regras de negócio utilizadas neste repos
 
 **Desafio:**  
 Documentos operacionais pendentes por longos períodos geram gargalos, retrabalho e impactos em processos downstream.
-
 Antes desta solução, o acompanhamento dessas pendências dependia de verificações manuais e comunicações reativas.
 
 ---
